@@ -1,11 +1,15 @@
 package com;
 
+import Clients.OrderClient;
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
@@ -45,7 +49,7 @@ public class GetOrdersOfTheParticularUserTest {
         int actualStatusCode = response.extract().statusCode();
         boolean isUserReceivedOrderList = response.extract().path("success");
 
-        assertThat("Ожидаемый статус код 200. Фактический " + actualStatusCode, actualStatusCode, equalTo(200));
+        assertThat("Ожидаемый статус код 200. Фактический " + actualStatusCode, actualStatusCode, equalTo(SC_OK));
         assertTrue("Должно вернуться true, по факту возвращается false. " +
                 "Автоизованный пользователь не может получить список заказов", isUserReceivedOrderList);
     }
@@ -61,7 +65,7 @@ public class GetOrdersOfTheParticularUserTest {
         boolean isSuccessFalse = response.extract().path("success");
         String actualErrorMessage = response.extract().path("message");
 
-        assertThat(actualStatusCode, equalTo(401));
+        assertThat(actualStatusCode, equalTo(SC_UNAUTHORIZED));
         assertFalse("Ожидается false, по факту true", isSuccessFalse);
         assertEquals("Ожидаемое сообщение об ошибке " + expectedErrorMessage + ". Фактическое " + actualErrorMessage,
                 expectedErrorMessage, actualErrorMessage);

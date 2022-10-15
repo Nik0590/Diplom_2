@@ -1,11 +1,14 @@
 package com;
 
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,9 +37,6 @@ public class CreateUserTest {
     @Test
     @Description("Проверка регистрации пользователя с валидными данными")
     public void userCanBeCreatedTest() {
-
-        int expectedStatusCode = 200;
-
         // Создание пользователя
         ValidatableResponse response = userClient.create(user);
         accessToken = response.extract().path("accessToken");
@@ -47,8 +47,8 @@ public class CreateUserTest {
         // Получение токена пользователя
         bearerToken = response.extract().path("accessToken");
         // Проверка что статус код соответсвует ожиданиям
-        assertThat("Expected status code is " + expectedStatusCode + ". But actual is " + actualStatusCode,
-                actualStatusCode, equalTo(expectedStatusCode));
+        assertThat("Expected status code is " + SC_OK + ". But actual is " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
         // Проверка что пользователь создался
         assertTrue("User is not created", isUserCreated);
         // Проверка что токен пользователя не пустой
@@ -57,11 +57,8 @@ public class CreateUserTest {
 
     @Test
     @Description("Проверка что нельзя зарегистрировать 2х одинаковых пользователей")
-    public void checkUserCanNotBeCreatedIfUserWithTheSameRegisterDataAlreadyExistsNegativeTest() {
-
-        int expectedStatusCode = 403;
+    public void checkThatItImpossibleRegister2IdenticalUsersTest() {
         String expectedErrorMessage = "User already exists";
-
         // Создание клиента
         accessToken = userClient.create(user).extract().path("accessToken");
         // Попытка создания пользователя с теми же данными
@@ -73,8 +70,8 @@ public class CreateUserTest {
         // Получение тела сообщения
         String actualErrorMessage = response.extract().path("message");
         // Проверка что статус код соответсвует ожидаемому
-        assertEquals("Expected status code is " + expectedStatusCode + ". But actual is " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertEquals("Expected status code is " + SC_FORBIDDEN + ". But actual is " + actualStatusCode,
+                actualStatusCode, equalTo(SC_FORBIDDEN));
         // Проверка что одинаковый пользователь не создался
         assertFalse("User is created", checkUserWasNotCreated);
         // Проверка что сообщение об ошибке соответсвует ожидаемому

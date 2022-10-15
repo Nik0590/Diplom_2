@@ -1,11 +1,13 @@
 package com;
 
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
@@ -25,12 +27,12 @@ public class UnsuccessfulCreatingUserWithInvalidDataNegativeTest {
     @Parameterized.Parameters
     public static Object[][] getTestData() {
         return new Object[][]{
-                {User.getUserWithEmailOnly(), 403, errorMessage},
-                {User.getUserWithPasswordOnly(), 403, errorMessage},
-                {User.getUserWithNameOnly(), 403, errorMessage},
-                {User.getUserWithoutEmail(), 403, errorMessage},
-                {User.getUserWithoutPassword(), 403, errorMessage},
-                {User.getUserWithoutName(), 403, errorMessage}
+                {User.getUserWithEmailOnly(), SC_FORBIDDEN, errorMessage},
+                {User.getUserWithPasswordOnly(), SC_FORBIDDEN, errorMessage},
+                {User.getUserWithNameOnly(), SC_FORBIDDEN, errorMessage},
+                {User.getUserWithoutEmail(), SC_FORBIDDEN, errorMessage},
+                {User.getUserWithoutPassword(), SC_FORBIDDEN, errorMessage},
+                {User.getUserWithoutName(), SC_FORBIDDEN, errorMessage}
         };
     }
 

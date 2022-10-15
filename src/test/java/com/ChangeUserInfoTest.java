@@ -1,5 +1,6 @@
 package com;
 
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
@@ -8,11 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.UserCredentials.*;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ChangeUserInfoTest {
-
-    int success200StatusCode = 200;
 
     private User user;
     private UserClient userClient;
@@ -37,12 +40,11 @@ public class ChangeUserInfoTest {
     @Test
     @DisplayName("Проверяет, что можно изменить EMAIL пользователя")
     public void checkUserEmailCanBeEdited() {
-        int expectedStatusCode = 200;
         ValidatableResponse response = userClient.userInfoChange(accessToken, user.setEmail(getUserEmail()));
 
         int actualStatusCode = response.extract().statusCode();
-        assertEquals("Ожидаемый статус код " + expectedStatusCode + ". Фактический " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertThat("Ожидаемый статус код " + SC_OK + ". Фактический " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
 
         boolean isUserEmailEdited = response.extract().path("success");
         assertTrue("Email пользователя не обновился", isUserEmailEdited);
@@ -56,12 +58,11 @@ public class ChangeUserInfoTest {
     @Test
     @DisplayName("Проверяет, что можно изменить PASSWORD пользователя")
     public void checkUserPasswordCanBeEdited() {
-        int expectedStatusCode = 200;
         ValidatableResponse response = userClient.userInfoChange(accessToken, user.setPassword(getUserPassword()));
 
         int actualStatusCode = response.extract().statusCode();
-        assertEquals("Ожиданемый статус код " + expectedStatusCode + ". Фактический " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertThat("Ожиданемый статус код " + SC_OK + ". Фактический " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
 
         boolean isUserPasswordUpdated = response.extract().path("success");
         assertTrue("Пароль пользователя не обновился", isUserPasswordUpdated);
@@ -70,12 +71,11 @@ public class ChangeUserInfoTest {
     @Test
     @DisplayName("Проверяет, что можно изменить NAME пользователя")
     public void checkUserNameCanBeEdited() {
-        int expectedStatusCode = 200;
         ValidatableResponse response = userClient.userInfoChange(accessToken, user.setName(getUserName()));
 
         int actualStatusCode = response.extract().statusCode();
-        assertEquals("Ожидаемый статус код " + expectedStatusCode + ". Фактический " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertThat("Ожидаемый статус код " + SC_OK + ". Фактический " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
 
         boolean isUserNameEdited = response.extract().path("success");
         assertTrue("Имя пользователя не обновилось", isUserNameEdited);
@@ -95,11 +95,11 @@ public class ChangeUserInfoTest {
         ValidatableResponse editedUser = userClient.editInfo(UserCredentials.getUserWithPasswordEmailAndName(user),
                 bearerToken);
 
-        int actualCode = editedUser.extract().statusCode();
+        int actualStatusCode = editedUser.extract().statusCode();
         boolean isSuccessTrue = editedUser.extract().path("success");
 
-        assertEquals("Ожидаемый статус код " + success200StatusCode + ". Фактический " + actualCode,
-                success200StatusCode, actualCode);
+        assertThat("Ожидаемый статус код " + SC_OK + ". Фактический " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
         assertTrue("Должно вернуться true, но возвращается false", isSuccessTrue);
     }
 
@@ -107,8 +107,6 @@ public class ChangeUserInfoTest {
     @Description("Проверяет, что неавторизованный пользователь не может менять информацию о себе ")
     public void userInfoCanNotBeChangedWithoutAuthorizationNegativeTest() {
         String expectedErrorMessage = "You should be authorised";
-        int expectedStatusCode = 401;
-
         userClient.create(user);
         ValidatableResponse info = userClient.editInfoWithoutToken(user);
 
@@ -116,8 +114,8 @@ public class ChangeUserInfoTest {
         boolean getUserInfo = info.extract().path("success");
         String actualErrorMessage = info.extract().path("message");
 
-        assertEquals("Ожидаемый статус код " + expectedStatusCode + ". Фактический " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertThat("Ожидаемый статус код " + SC_UNAUTHORIZED + ". Фактический " + actualStatusCode,
+                actualStatusCode, equalTo(SC_UNAUTHORIZED));
         assertFalse("Ожидаемый ответ false, по факту true", getUserInfo);
         assertEquals("Ожидаемое сообщение об ошибке " + expectedErrorMessage + ". Фактическое " + actualErrorMessage,
                 expectedErrorMessage, actualErrorMessage);

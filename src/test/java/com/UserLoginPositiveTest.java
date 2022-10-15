@@ -1,21 +1,23 @@
 package com;
 
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
 public class UserLoginPositiveTest {
 
     private UserClient userClient;
     private User user;
-    String accessToken;
+    private String accessToken;
 
     //Создаем нового рандомного курьера
     @Before
@@ -35,7 +37,6 @@ public class UserLoginPositiveTest {
     @Description("Проверка что существующий пользователь может авторизоваться")
     public void userCanLogInUsingValidData() {
 
-        int expectedStatusCode = 200;
         // Создание пользователя
         userClient.create(user);
         // Авторизация созданного пользователя
@@ -48,9 +49,8 @@ public class UserLoginPositiveTest {
         String token = login.extract().path("accessToken");
 
         // Проверка что статус код соответсвует ожиданиям
-        // assertThat ("Status code is incorrect", actualStatusCode, equalTo(200));
-        assertEquals("Expected status cod is " + expectedStatusCode + ". But actual is " + actualStatusCode,
-                expectedStatusCode, actualStatusCode);
+        assertThat("Expected status cod is " + SC_OK + ". But actual is " + actualStatusCode,
+                actualStatusCode, equalTo(SC_OK));
         // Проверка что пользователь авторизовался
         assertTrue("Authorization attempt failed", userLoggedInSuccessfully);
         // Проверка что токен пользователя не пустой

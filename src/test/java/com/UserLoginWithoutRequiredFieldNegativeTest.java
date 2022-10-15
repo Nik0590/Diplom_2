@@ -1,11 +1,13 @@
 package com;
 
+import Clients.UserClient;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -27,9 +29,9 @@ public class UserLoginWithoutRequiredFieldNegativeTest {
     @Parameterized.Parameters
     public static Object[][] getTestData() {
         return new Object[][]{
-                {UserCredentials.getUserWithEmail(user), 401, errorMessage},
-                {UserCredentials.getUserWithPassword(user), 401, errorMessage},
-                {UserCredentials.getUserWithRandomEmailAndPassword(), 401, errorMessage}
+                {UserCredentials.getUserWithEmail(user), SC_UNAUTHORIZED, errorMessage},
+                {UserCredentials.getUserWithPassword(user), SC_UNAUTHORIZED, errorMessage},
+                {UserCredentials.getUserWithRandomEmailAndPassword(), SC_UNAUTHORIZED, errorMessage}
         };
     }
 

@@ -1,7 +1,7 @@
 package com;
 
 public class IngredientsHashes {
-    public String ingredients;
+    private final String ingredients;
 
     public IngredientsHashes(String ingredients) {
         this.ingredients = ingredients;

@@ -1,0 +1,7 @@
+com/CreateOrderTest.class
+com/ChangeUserInfoTest.class
+com/UserLoginWithoutRequiredFieldNegativeTest.class
+com/GetOrdersOfTheParticularUserTest.class
+com/CreateUserTest.class
+com/UserLoginPositiveTest.class
+com/UnsuccessfulCreatingUserWithInvalidDataNegativeTest.class
